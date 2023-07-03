@@ -1,17 +1,40 @@
 #!/usr/bin/env bash
-#configures a new Ubuntu machine nginx
-apt-get update
-apt-get install software-properties-common -y
-add-apt-repository ppa:vbernat/haproxy-1.7 -y
-apt-get update
-apt-get install haproxy=1.7.\* -y
-echo "frontend web-front
-        bind *:80
-        default_backend web-backend
+# This script installs and configures HAProxy on the lb-01 server.
 
-backend web-backend
-        balance roundrobin
-        server web1 18.209.178.99:80 check
-        server web2 54.157.165.107:80 check
-" | sudo tee -a /etc/haproxy/haproxy.cfg
-sudo service haproxy start
+set -euo pipefail
+
+# Update the system packages
+sudo apt update
+sudo apt upgrade -y
+
+# Install HAProxy
+sudo apt install haproxy -y
+
+# Configure HAProxy
+sudo bash -c 'cat << EOF > /etc/haproxy/haproxy.cfg
+global
+    daemon
+    maxconn 256
+
+defaults
+    mode http
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+frontend http-in
+    bind *:80
+    default_backend webservers
+
+backend webservers
+    balance roundrobin
+    server web-01 207427-web-01:80 check
+    server web-02 207427-web-02:80 check
+EOF'
+
+# Enable HAProxy service
+sudo systemctl enable haproxy
+
+# Restart HAProxy
+sudo systemctl restart haproxy
+

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2154
 #configures a new Ubuntu machine nginx
 # Update the system packages
 sudo apt update
