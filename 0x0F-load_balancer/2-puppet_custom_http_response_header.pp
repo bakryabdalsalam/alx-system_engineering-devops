@@ -1,16 +1,8 @@
-# Install Nginx
-class { 'nginx': }
-
-# Create a custom Nginx configuration file to add the custom header
-file { '/etc/nginx/conf.d/custom-header.conf':
-  ensure  => present,
-  content => "add_header X-Served-By ${hostname};",
-  notify  => Service['nginx'],
+# Automation: creates a custom HTTP header response with Puppet.
+exec { 'command':
+  command  => 'apt-get -y update;
+  apt-get -y install nginx;
+  sudo sed -i "/listen 80 default_server;/a add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default;
+  service nginx restart',
+  provider => shell,
 }
-
-# Ensure Nginx service is running and enabled
-service { 'nginx':
-  ensure => running,
-  enable => true,
-}
-
