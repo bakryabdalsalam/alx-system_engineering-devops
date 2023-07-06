@@ -1,4 +1,5 @@
-        log /dev/log    local0 
+global
+        log /dev/log    local0
         log /dev/log    local1 notice
         chroot /var/lib/haproxy
         stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
@@ -17,11 +18,11 @@
         ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
 
 defaults
-        log     global 
+        log     global
         mode    http
         option  httplog
         option  dontlognull
-        timeout connect 5000 
+        timeout connect 5000
         timeout client  50000
         timeout server  50000
         errorfile 400 /etc/haproxy/errors/400.http
@@ -30,4 +31,3 @@ defaults
         errorfile 500 /etc/haproxy/errors/500.http
         errorfile 502 /etc/haproxy/errors/502.http
         errorfile 503 /etc/haproxy/errors/503.http
-        errorfile 504 /etc/haproxy/errors/504.http
