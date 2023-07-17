@@ -1,0 +1,21 @@
+# Install UFW firewall
+sudo apt update
+sudo apt install ufw -y
+
+# Enable UFW
+sudo ufw enable
+
+# Allow SSH (port 22)
+sudo ufw allow 22/tcp
+
+# Allow HTTPS (port 443)
+sudo ufw allow 443/tcp
+
+# Allow HTTP (port 80)
+sudo ufw allow 80/tcp
+
+# Enable UFW to block all other incoming traffic
+sudo ufw default deny incoming
+
+# Reload UFW rules
+sudo ufw reload
