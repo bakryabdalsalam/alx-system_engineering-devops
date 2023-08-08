@@ -1,46 +1,33 @@
 #!/usr/bin/python3
 """
-2-recurse
+Recursive function that queries the Reddit API.
+Returns a list containing the titles of all hot articles for a given subreddit.
 """
-
 import requests
 
-def recurse(subreddit, hot_list=[], after=None):
-    """Queries the Reddit API recursively and returns a list containing the titles of all hot articles for a given subreddit."""
-    headers = {
-        'User-Agent': 'MyRedditBot'
-    }
 
-    url = f'https://www.reddit.com/r/{subreddit}/hot.json'
-    params = {'after': after} if after else None
-
-    response = requests.get(url, headers=headers, params=params)
-
-    if response.status_code == 200:
-        data = response.json()
-        posts = data['data']['children']
-
-        for post in posts:
-            title = post['data']['title']
-            hot_list.append(title)
-
-        after = data['data']['after']
-        if after:
-            recurse(subreddit, hot_list, after)
-
-        return hot_list
-    else:
+def recurse(subreddit, hot_list=[], after=""):
+    """queries reddit API"""
+    if subreddit is None or type(subreddit) is not str:
         return None
 
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) < 2:
-        print("Please pass an argument for the subreddit to search.")
-    else:
-        subreddit = sys.argv[1]
-        result = recurse(subreddit)
-        if result is not None:
-            print(len(result))
-        else:
-            print("None")
+    url = 'http://www.reddit.com/r/{}/hot.json'.format(subreddit)
+    headers = {'User-Agent': 'ALX-advanced_APIi/by Bakry Abdalsalam'}
+    params = {
+            'after': after,
+            'limit': 100
+            }
+    resp = requests.get(url, headers=headers, params=params,
+                        allow_redirects=True)
+    if resp.status_code == 404:
+        return None
 
+    res = resp.json().get('data')
+    after = res.get('after')
+    count = res.get('dist')
+    for item in res.get('children'):
+        hot_list.append(item.get('data').get('title'))
+
+    if after is not None:
+        return recurse(subreddit, hot_list, after)
+    return hot_list
